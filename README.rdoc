@@ -1,4 +1,4 @@
-= each_with_context
+= slug
 
 Slug provides simple, straightforward slugging for your ActiveRecord models.
 
