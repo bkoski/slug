@@ -8,6 +8,8 @@ begin
     s.email = "ben.koski@gmail.com"
     s.homepage = "http://github.com/bkoski/slug"
     s.description = "Simple, straightforward slugs for your ActiveRecord models."
+    s.add_dependency 'activerecord'
+    s.add_dependency 'activesupport'
     s.authors = ["Ben Koski"]
   end
 rescue LoadError
