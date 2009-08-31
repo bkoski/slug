@@ -24,16 +24,30 @@ class TestSlug < Test::Unit::TestCase
     end
   end
 
-  should "raise ArgumentError if an invalid source column is passed" do
-  end
+  context "setup validations" do
+    teardown do
+      Person.slug(:name, :column => :web_slug) # Reset Person slug column to valid config.
+    end
 
-  should "raise an ArgumentError if an invalid slug column is passed" do
-  end
+    should "raise ArgumentError if an invalid source column is passed" do
+      assert_raises(ArgumentError) { Person.slug(:invalid_source_column) }
+    end
 
+    should "raise an ArgumentError if an invalid slug column is passed" do
+      assert_raises(ArgumentError) { Person.slug(:name, :column => :bad_slug_column)}
+    end
+  end
+  
   should "set validation error if source column is empty" do
+    article = Article.create
+    assert !article.valid?
+    assert article.errors.on(:slug)
   end
   
   should "set validation error if normalization makes source value empty" do
+    article = Article.create(:headline => '---')
+    assert !article.valid?
+    assert article.errors.on(:slug)
   end
   
   should "not update the slug even if the source column changes" do
@@ -47,7 +61,7 @@ class TestSlug < Test::Unit::TestCase
       @article = Article.new
     end
 
-    should "should lowercase  strings" do
+    should "should lowercase strings" do
       @article.headline = 'AbC'
       @article.save!
       assert_equal "abc", @article.slug
