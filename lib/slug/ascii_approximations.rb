@@ -1,4 +1,5 @@
 module Slug
+  # ASCII approximations for accented characters.
   ASCII_APPROXIMATIONS = {
     198 => "AE",
     208 => "D",
