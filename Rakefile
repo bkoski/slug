@@ -4,10 +4,10 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "slug"
-    s.summary = %Q{TODO}
-    s.email = "bkoski@nytimes.com"
+    s.summary = %Q{Simple, straightforward slugs for your ActiveRecord models.}
+    s.email = "ben.koski@gmail.com"
     s.homepage = "http://github.com/bkoski/slug"
-    s.description = "TODO"
+    s.description = "Simple, straightforward slugs for your ActiveRecord models."
     s.authors = ["Ben Koski"]
   end
 rescue LoadError
