@@ -16,10 +16,8 @@ module Slug
       class_inheritable_accessor :slug_source, :slug_column
       
       self.slug_source = source
-      raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.column_names.include?(self.slug_source.to_s)
       
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
-      raise ArgumentError, "Slug column '#{self.slug_column}' does not exist! #{self.column_names.join(',')}" if !self.column_names.include?(self.slug_column.to_s)
       
       validates_presence_of self.slug_column
       validates_uniqueness_of self.slug_column
@@ -29,13 +27,14 @@ module Slug
   
   # Sets the slug. Called before create.
   def set_slug
-    self[self.slug_column] = self[self.slug_source]
+    validate_slug_columns
+    self[self.slug_column] = self.send(self.slug_source)
 
     strip_diacritics_from_slug
     normalize_slug
     assign_slug_sequence
     
-    self.errors.add(self.slug_column, "#{self.slug_column} cannot be blank. Is #{self.slug_source} sluggable?") if self[self.slug_column].blank?
+    self.errors.add(self.slug_column, "#{self.slug_column} cannot be blank. ") if self[self.slug_column].blank?
   end
   
   # Overrides to_param to return the model's slug.
@@ -48,6 +47,13 @@ module Slug
   end
   
   private
+  # Validates that source and destination methods exist. Invoked at runtime to allow definition
+  # of source/slug methods after <tt>slug</tt> setup in class.
+  def validate_slug_columns
+    raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
+    raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
+  end
+  
   # Takes the slug, downcases it and replaces non-word characters with a -.
   # Feel free to override this method if you'd like different slug formatting.
   def normalize_slug

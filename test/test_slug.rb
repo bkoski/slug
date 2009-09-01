@@ -12,6 +12,11 @@ class TestSlug < Test::Unit::TestCase
     assert_equal 'test-headline', article.slug
   end
 
+  should "base slug on specified source column, even if it is defined as a method rather than database attribute" do
+    article = Event.create!(:title => 'Test Event', :location => 'Portland')
+    assert_equal 'test-event-portland', article.slug
+  end
+
   context "slug column" do
     should "save slug to 'slug' column by default" do
       article = Article.create!(:headline => 'Test Headline')
@@ -24,17 +29,15 @@ class TestSlug < Test::Unit::TestCase
     end
   end
 
-  context "setup validations" do
-    teardown do
-      Person.slug(:name, :column => :web_slug) # Reset Person slug column to valid config.
-    end
-
+  context "column validations" do
     should "raise ArgumentError if an invalid source column is passed" do
-      assert_raises(ArgumentError) { Person.slug(:invalid_source_column) }
+      Company.slug(:invalid_source_column) 
+      assert_raises(ArgumentError) { Company.create! }
     end
 
     should "raise an ArgumentError if an invalid slug column is passed" do
-      assert_raises(ArgumentError) { Person.slug(:name, :column => :bad_slug_column)}
+      Company.slug(:name, :column => :bad_slug_column)
+      assert_raises(ArgumentError) { Company.create! }
     end
   end
   
