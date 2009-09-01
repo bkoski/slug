@@ -19,7 +19,7 @@ module Slug
       
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
       
-      validates_presence_of self.slug_column
+      validates_presence_of self.slug_column, :message => "#{self.slug_column} cannot be blank. Is #{self.slug_source} sluggable?"
       validates_uniqueness_of self.slug_column
       before_validation_on_create :set_slug 
     end
@@ -33,8 +33,6 @@ module Slug
     strip_diacritics_from_slug
     normalize_slug
     assign_slug_sequence
-    
-    self.errors.add(self.slug_column, "#{self.slug_column} cannot be blank. ") if self[self.slug_column].blank?
   end
   
   # Overrides to_param to return the model's slug.
