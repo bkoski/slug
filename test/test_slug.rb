@@ -44,12 +44,16 @@ class TestSlug < Test::Unit::TestCase
   should "set validation error if source column is empty" do
     article = Article.create
     assert !article.valid?
+    require 'ruby-debug'
+    debugger if article.errors.count > 1
+    assert_equal 1, article.errors.count
     assert article.errors.on(:slug)
   end
   
   should "set validation error if normalization makes source value empty" do
     article = Article.create(:headline => '---')
     assert !article.valid?
+    assert_equal 1, article.errors.count
     assert article.errors.on(:slug)
   end
   
