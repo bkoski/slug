@@ -14,6 +14,7 @@ module Slug
     # later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
       class_inheritable_accessor :slug_source, :slug_column
+      include InstanceMethods
       
       self.slug_source = source
       
@@ -25,84 +26,86 @@ module Slug
     end
   end
   
-  # Sets the slug. Called before create.
-  def set_slug
-    validate_slug_columns
-    self[self.slug_column] = self.send(self.slug_source)
+  module InstanceMethods
+  
+    # Sets the slug. Called before create.
+    def set_slug
+      validate_slug_columns
+      self[self.slug_column] = self.send(self.slug_source)
 
-    strip_diacritics_from_slug
-    normalize_slug
-    assign_slug_sequence
-  end
+      strip_diacritics_from_slug
+      normalize_slug
+      assign_slug_sequence
+    end
   
-  # Overrides to_param to return the model's slug.
-  def to_param
-    self[self.slug_column]
-  end
+    # Overrides to_param to return the model's slug.
+    def to_param
+      self[self.slug_column]
+    end
   
-  def self.included(klass)
-    klass.extend(ClassMethods)
-  end
+    def self.included(klass)
+      klass.extend(ClassMethods)
+    end
   
-  private
-  # Validates that source and destination methods exist. Invoked at runtime to allow definition
-  # of source/slug methods after <tt>slug</tt> setup in class.
-  def validate_slug_columns
-    raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
-    raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
-  end
+    private
+    # Validates that source and destination methods exist. Invoked at runtime to allow definition
+    # of source/slug methods after <tt>slug</tt> setup in class.
+    def validate_slug_columns
+      raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
+      raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
+    end
   
-  # Takes the slug, downcases it and replaces non-word characters with a -.
-  # Feel free to override this method if you'd like different slug formatting.
-  def normalize_slug
-    return if self[self.slug_column].blank?
-    s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column]).normalize(:kc)
-    s.downcase!
-    s.strip!
-    s.gsub!(/[\W]/u, ' ') # Remove non-word characters
-    s.gsub!(/\s+/u, '-') # Convert whitespaces to dashes
-    s.gsub!(/-\z/u, '') # Remove trailing dashes
-    self[self.slug_column] = s.to_s
-  end
+    # Takes the slug, downcases it and replaces non-word characters with a -.
+    # Feel free to override this method if you'd like different slug formatting.
+    def normalize_slug
+      return if self[self.slug_column].blank?
+      s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column]).normalize(:kc)
+      s.downcase!
+      s.strip!
+      s.gsub!(/[\W]/u, ' ') # Remove non-word characters
+      s.gsub!(/\s+/u, '-') # Convert whitespaces to dashes
+      s.gsub!(/-\z/u, '') # Remove trailing dashes
+      self[self.slug_column] = s.to_s
+    end
   
-  # Converts accented characters to their ASCII equivalents and removes them if they have no equivalent.
-  # Override this with a void function if you don't want accented characters to be stripped.
-  def strip_diacritics_from_slug
-    return if self[self.slug_column].blank?
-    s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column])
-    s = s.normalize(:kd).unpack('U*')
-    s = s.inject([]) do |a,u|
-      if Slug::ASCII_APPROXIMATIONS[u]
-        a += Slug::ASCII_APPROXIMATIONS[u].unpack('U*')
-      elsif (u < 0x300 || u > 0x036F)
-        a << u
+    # Converts accented characters to their ASCII equivalents and removes them if they have no equivalent.
+    # Override this with a void function if you don't want accented characters to be stripped.
+    def strip_diacritics_from_slug
+      return if self[self.slug_column].blank?
+      s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column])
+      s = s.normalize(:kd).unpack('U*')
+      s = s.inject([]) do |a,u|
+        if Slug::ASCII_APPROXIMATIONS[u]
+          a += Slug::ASCII_APPROXIMATIONS[u].unpack('U*')
+        elsif (u < 0x300 || u > 0x036F)
+          a << u
+        end
+        a
       end
-      a
+      s = s.pack('U*')
+      s.gsub!(/[^a-z0-9]+/i, ' ')
+      self[self.slug_column] = s.to_s
     end
-    s = s.pack('U*')
-    s.gsub!(/[^a-z0-9]+/i, ' ')
-    self[self.slug_column] = s.to_s
-  end
   
-  # If a slug of the same name already exists, this will append '-n' to the end of the slug to
-  # make it unique. The second instance gets a '-1' suffix.
-  def assign_slug_sequence
-    return if self[self.slug_column].blank?
-    idx = next_slug_sequence
-    self[self.slug_column] = "#{self[self.slug_column]}-#{idx}" if idx > 0
-  end
+    # If a slug of the same name already exists, this will append '-n' to the end of the slug to
+    # make it unique. The second instance gets a '-1' suffix.
+    def assign_slug_sequence
+      return if self[self.slug_column].blank?
+      idx = next_slug_sequence
+      self[self.slug_column] = "#{self[self.slug_column]}-#{idx}" if idx > 0
+    end
   
-  # Returns the next unique index for a slug.
-  def next_slug_sequence
-    last_in_sequence = self.class.find(:first, :conditions => ["#{self.slug_column} LIKE ?", self[self.slug_column] + '%'],
-                                         :order => "CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}','') AS UNSIGNED)")
-    if last_in_sequence.nil?
-      return 0
-    else
-      sequence_match = last_in_sequence[self.slug_column].match(/^#{self[self.slug_column]}(-(\d+))?/)
-      current = sequence_match.nil? ? 0 : sequence_match[2].to_i
-      return current + 1
+    # Returns the next unique index for a slug.
+    def next_slug_sequence
+      last_in_sequence = self.class.find(:first, :conditions => ["#{self.slug_column} LIKE ?", self[self.slug_column] + '%'],
+                                           :order => "CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}','') AS UNSIGNED)")
+      if last_in_sequence.nil?
+        return 0
+      else
+        sequence_match = last_in_sequence[self.slug_column].match(/^#{self[self.slug_column]}(-(\d+))?/)
+        current = sequence_match.nil? ? 0 : sequence_match[2].to_i
+        return current + 1
+      end
     end
   end
-  
 end
