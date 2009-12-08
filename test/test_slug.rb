@@ -116,6 +116,12 @@ class TestSlug < Test::Unit::TestCase
       assert_match 'ab', @article.slug
     end
 
+    should "remove double-dashes" do
+      @article.headline = 'a--b--c'
+      @article.save!
+      assert_match 'a-b-c', @article.slug
+    end
+
     should "should not modify valid slug strings" do
       @article.headline = 'a-b-c-d'
       @article.save!
