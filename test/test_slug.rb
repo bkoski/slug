@@ -45,15 +45,12 @@ class TestSlug < Test::Unit::TestCase
     article = Article.create
     assert !article.valid?
     require 'ruby-debug'
-    debugger if article.errors.count > 1
-    assert_equal 1, article.errors.count
     assert article.errors.on(:slug)
   end
   
   should "set validation error if normalization makes source value empty" do
     article = Article.create(:headline => '---')
     assert !article.valid?
-    assert_equal 1, article.errors.count
     assert article.errors.on(:slug)
   end
   
@@ -61,6 +58,14 @@ class TestSlug < Test::Unit::TestCase
     article = Article.create!(:headline => 'Test Headline')
     article.update_attributes!(:headline =>  'New Headline')
     assert_equal 'test-headline', article.slug
+  end
+
+  should "validate slug format on save" do
+    article = Article.create!(:headline => 'Test Headline')
+    article.slug = 'A BAD $LUG.'
+
+    assert !article.valid?
+    assert article.errors[:slug].present?
   end
 
   context "slug normalization" do
