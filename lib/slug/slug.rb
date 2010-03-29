@@ -55,7 +55,7 @@ module Slug
       raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
       raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
     end
-  
+    
     # Takes the slug, downcases it and replaces non-word characters with a -.
     # Feel free to override this method if you'd like different slug formatting.
     def normalize_slug
@@ -63,9 +63,10 @@ module Slug
       s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column]).normalize(:kc)
       s.downcase!
       s.strip!
-      s.gsub!(/[\W]/u, ' ') # Remove non-word characters
-      s.gsub!(/\s+/u, '-') # Convert whitespaces to dashes
-      s.gsub!(/-\z/u, '') # Remove trailing dashes
+      s.gsub!(/[^\w\s-]/u, '') # Remove non-word characters
+      s.gsub!(/\s+/u, '-')    # Convert whitespaces to dashes
+      s.gsub!(/-\z/u, '')     # Remove trailing dashes
+      s.gsub!(/-+/, '-')      # get rid of double-dashes
       self[self.slug_column] = s.to_s
     end
   
@@ -84,7 +85,6 @@ module Slug
         a
       end
       s = s.pack('U*')
-      s.gsub!(/[^a-z0-9]+/i, ' ')
       self[self.slug_column] = s.to_s
     end
   

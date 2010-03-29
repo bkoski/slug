@@ -49,7 +49,7 @@ class TestSlug < Test::Unit::TestCase
   end
   
   should "set validation error if normalization makes source value empty" do
-    article = Article.create(:headline => '---')
+    article = Article.create(:headline => '$$$')
     assert !article.valid?
     assert article.errors.on(:slug)
   end
@@ -131,6 +131,24 @@ class TestSlug < Test::Unit::TestCase
       @article.headline = 'a-b-c-d'
       @article.save!
       assert_match 'a-b-c-d', @article.slug
+    end
+    
+    should "not insert dashes for periods in acronyms, regardless of where they appear in string" do
+      @article.headline = "N.Y.P.D. vs. N.S.A. vs. F.B.I."
+      @article.save!
+      assert_match 'nypd-vs-nsa-vs-fbi', @article.slug
+    end
+    
+    should "not insert dashes for apostrophes" do
+      @article.headline = "Thomas Jefferson's Papers"
+      @article.save!
+      assert_match 'thomas-jeffersons-papers', @article.slug
+    end
+    
+    should "preserve numbers in slug" do
+      @article.headline = "2010 Election"
+      @article.save!
+      assert_match '2010-election', @article.slug
     end
   end
   
