@@ -20,9 +20,9 @@ module Slug
       
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
       
-      validates_presence_of     self.slug_column, :message => "#{self.slug_column} cannot be blank. Is #{self.slug_source} sluggable?"
+      validates_presence_of     self.slug_column, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
       validates_uniqueness_of   self.slug_column
-      validates_format_of       self.slug_column, :with => /^[a-z0-9-]+/, :message => "#{self.slug_column} contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
+      validates_format_of       self.slug_column, :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
       before_validation_on_create :set_slug 
     end
   end
