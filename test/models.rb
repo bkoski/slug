@@ -13,6 +13,10 @@ class Company < ActiveRecord::Base
   slug :name
 end
 
+class Post < ActiveRecord::Base
+  slug :headline, :validates_uniqueness_if => Proc.new { false } 
+end
+
 # Used to test slugs based on methods rather than database attributes
 class Event < ActiveRecord::Base
   slug :title_for_slug

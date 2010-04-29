@@ -8,10 +8,13 @@ module Slug
     #
     # Options:
     # * <tt>:column</tt> - the column the slug will be saved to (defaults to <tt>:slug</tt>)
+    # * <tt>:validates_uniquness_if</tt> - proc to determine whether uniqueness validation runs, same format as validates_uniquness_of :if
     #
-    # Slug will take care of validating presence and uniqueness of slug. It will generate the slug before create;
-    # subsequent changes to the source column will have no effect on the slug.  If you'd like to update the slug
-    # later on, call <tt>@model.set_slug</tt>
+    # Slug will take care of validating presence and uniqueness of slug.
+    
+    # Before create, Slug will generate and assign the slug if it wasn't explicitly set.
+    # Note that subsequent changes to the source column will have no effect on the slug.
+    # If you'd like to update the slug later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
       class_inheritable_accessor :slug_source, :slug_column
       include InstanceMethods
@@ -19,9 +22,12 @@ module Slug
       self.slug_source = source
       
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
+
+      uniqueness_opts = {}
+      uniqueness_opts.merge!(:if => opts[:validates_uniqueness_if]) if opts[:validates_uniqueness_if].present?
       
       validates_presence_of     self.slug_column, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
-      validates_uniqueness_of   self.slug_column
+      validates_uniqueness_of   self.slug_column, uniqueness_opts
       validates_format_of       self.slug_column, :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
       before_validation_on_create :set_slug 
     end
@@ -32,7 +38,7 @@ module Slug
     # Sets the slug. Called before create.
     def set_slug
       validate_slug_columns
-      self[self.slug_column] = self.send(self.slug_source)
+      self[self.slug_column] = self.send(self.slug_source) if self[self.slug_column].blank?
 
       strip_diacritics_from_slug
       normalize_slug

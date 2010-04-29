@@ -67,7 +67,30 @@ class TestSlug < Test::Unit::TestCase
     assert !article.valid?
     assert article.errors[:slug].present?
   end
+  
+  should "validate uniqueness of slug by default" do
+    article1 = Article.create!(:headline => 'Test Headline')
+    article2 = Article.create!(:headline => 'Test Headline')
+    article2.slug = 'test-headline'
+    
+    assert !article2.valid?
+    assert article2.errors[:slug].present?
+  end
 
+  should "use validate_uniquness_if proc to decide whether uniqueness validation applies" do
+    article1 = Post.create!(:headline => 'Test Headline')
+    article2 = Post.new
+    article2.slug = 'test-headline'
+    
+    assert article2.valid?
+  end
+
+  should "not overwrite slug value on create if it was already specified" do
+    a = Article.create!(:headline => 'Test Headline', :slug => 'slug1')
+    assert_equal 'slug1', a.slug
+  end
+
+  
   context "slug normalization" do
     setup do
       @article = Article.new

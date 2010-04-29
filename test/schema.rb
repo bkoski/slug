@@ -16,6 +16,11 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column "slug", "string"
   end
   
+  create_table "posts", :force => true do |t|
+    t.column "headline", "string"
+    t.column "slug", "string"
+  end
+  
   create_table "events", :force => true do |t|
     t.column "title", "string"
     t.column "location", "string"
