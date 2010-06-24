@@ -36,13 +36,22 @@ module Slug
   module InstanceMethods
   
     # Sets the slug. Called before create.
-    def set_slug
-      validate_slug_columns
-      self[self.slug_column] = self.send(self.slug_source) if self[self.slug_column].blank?
+    # By default, set_slug won't change slug if one already exists.  Pass :force => true to overwrite.
+    def set_slug(opts={})
+      validate_slug_columns      
+      return unless self[self.slug_column].blank? || opts[:force] == true
+
+      original_slug = self[self.slug_column]
+      self[self.slug_column] = self.send(self.slug_source)
 
       strip_diacritics_from_slug
       normalize_slug
-      assign_slug_sequence
+      assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
+    end
+  
+    # Overwrite existing slug based on current contents of source column.
+    def reset_slug
+      set_slug(:force => true)
     end
   
     # Overrides to_param to return the model's slug.

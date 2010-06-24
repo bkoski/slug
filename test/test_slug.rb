@@ -90,6 +90,33 @@ class TestSlug < Test::Unit::TestCase
     assert_equal 'slug1', a.slug
   end
 
+  context "resetting a slug" do
+  
+    setup do
+      @article = Article.create(:headline => 'test headline')
+      @original_slug = @article.slug
+    end
+    
+    should "maintain the same slug if slug column hasn't changed" do
+      @article.reset_slug
+      assert_equal @original_slug, @article.slug      
+    end
+    
+    should "change slug if slug column has updated" do
+      @article.headline = "donkey"
+      @article.reset_slug
+      assert_not_equal @original_slug, @article.slug
+    end
+    
+    should "maintain sequence" do
+      @existing_article = Article.create!(:headline => 'world cup')
+      @article.headline = "world cup"
+      @article.reset_slug
+      assert_equal 'world-cup-1', @article.slug
+    end
+  
+  end
+  
   
   context "slug normalization" do
     setup do
