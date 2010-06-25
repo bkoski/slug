@@ -78,7 +78,7 @@ module Slug
       s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column]).normalize(:kc)
       s.downcase!
       s.strip!
-      s.gsub!(/[^\w\s-]/, '') # Remove non-word characters
+      s.gsub!(/[^a-z0-9\s-]/, '') # Remove non-word characters
       s.gsub!(/\s+/, '-')     # Convert whitespaces to dashes
       s.gsub!(/-\z/, '')      # Remove trailing dashes
       s.gsub!(/-+/, '-')      # get rid of double-dashes

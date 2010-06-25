@@ -142,7 +142,7 @@ class TestSlug < Test::Unit::TestCase
     end
 
     should "should remove punctuation" do
-      @article.headline = 'abc!@#$%^&*•¶§∞¢££¡¿()><?"":;][]\.,/'
+      @article.headline = 'abc!@#$%^&*•¶§∞¢££¡¿()><?""\':;][]\.,/'
       @article.save!
       assert_match 'abc', @article.slug
     end
