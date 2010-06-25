@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{slug}
-  s.version = "0.5.6"
+  s.version = "0.5.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Koski"]
-  s.date = %q{2010-06-24}
+  s.date = %q{2010-06-25}
   s.description = %q{Simple, straightforward slugs for your ActiveRecord models.}
   s.email = %q{ben.koski@gmail.com}
   s.extra_rdoc_files = [
