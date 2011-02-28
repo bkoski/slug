@@ -15,7 +15,7 @@ end
 
 class Post < ActiveRecord::Base
   slug :headline
-  validates :slug, {:uniqueness => { :allow_validation => false }}
+  validates :slug, {:uniqueness => { :validate_uniqueness_if => Proc.new { false } }}
 end
 
 # Used to test slugs based on methods rather than database attributes

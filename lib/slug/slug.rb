@@ -24,7 +24,7 @@ module Slug
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
 
       uniqueness_opts = {}
-      uniqueness_opts.merge!(:if => opts[:allow_validation]) if opts[:allow_validation].present?
+      uniqueness_opts.merge!(:if => opts[:validate_uniqueness_if]) if opts[:validate_uniqueness_if].present?
       
       validates                 self.slug_column, :presence => :true, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
       validates                 self.slug_column, :uniqueness => :true, uniqueness_opts
