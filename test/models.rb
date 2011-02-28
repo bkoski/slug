@@ -14,7 +14,8 @@ class Company < ActiveRecord::Base
 end
 
 class Post < ActiveRecord::Base
-  slug :headline, :validates_uniqueness_if => Proc.new { false } 
+  slug :headline
+  validates :slug, {:uniqueness => { :allow_validation => false }}
 end
 
 # Used to test slugs based on methods rather than database attributes

@@ -77,7 +77,7 @@ class TestSlug < Test::Unit::TestCase
     assert article2.errors[:slug].present?
   end
 
-  should "use validate_uniquness_if proc to decide whether uniqueness validation applies" do
+  should "use validate_uniqueness_if proc to decide whether uniqueness validation applies" do
     article1 = Post.create!(:headline => 'Test Headline')
     article2 = Post.new
     article2.slug = 'test-headline'

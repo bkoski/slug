@@ -24,12 +24,12 @@ module Slug
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
 
       uniqueness_opts = {}
-      uniqueness_opts.merge!(:if => opts[:validates_uniqueness_if]) if opts[:validates_uniqueness_if].present?
+      uniqueness_opts.merge!(:if => opts[:allow_validation]) if opts[:allow_validation].present?
       
-      validates_presence_of     self.slug_column, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
-      validates_uniqueness_of   self.slug_column, uniqueness_opts
-      validates_format_of       self.slug_column, :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
-      before_validation_on_create :set_slug 
+      validates                 self.slug_column, :presence => :true, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
+      validates                 self.slug_column, :uniqueness => :true, uniqueness_opts
+      validates                 self.slug_column, :format => :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
+      before_validation :set_slug, :on => :create
     end
   end
   
@@ -113,8 +113,7 @@ module Slug
   
     # Returns the next unique index for a slug.
     def next_slug_sequence
-      last_in_sequence = self.class.find(:first, :conditions => ["#{self.slug_column} LIKE ?", self[self.slug_column] + '%'],
-                                           :order => "CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}','') AS UNSIGNED)")
+      last_in_sequence = self.class.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '%').order("CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}','') AS UNSIGNED)").first
       if last_in_sequence.nil?
         return 0
       else
