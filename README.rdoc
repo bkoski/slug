@@ -12,11 +12,11 @@ Here's what's different:
 
 == INSTALLATION
 
-  sudo gem install slug --source http://gemcutter.org
+  sudo gem install slug
 
 then add
 
-  config.gem 'slug', :source => 'http://gemcutter.org'
+  config.gem 'slug'
 
 to your rails project.
 
