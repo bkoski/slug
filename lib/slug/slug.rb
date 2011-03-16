@@ -24,11 +24,11 @@ module Slug
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
 
       uniqueness_opts = {}
-      uniqueness_opts.merge!(:if => opts[:validate_uniqueness_if]) if opts[:validate_uniqueness_if].present?
+      uniqueness_opts[:if] = opts[:validate_uniqueness_if] if opts.key?(:validate_uniqueness_if)
       
-      validates                 self.slug_column, :presence => :true, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
-      validates                 self.slug_column, :uniqueness => :true, uniqueness_opts
-      validates                 self.slug_column, :format => :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
+      validates                 self.slug_column, :presence => { :message => "cannot be blank. Is #{self.slug_source} sluggable?" }
+      validates                 self.slug_column, :uniqueness => uniqueness_opts
+      validates                 self.slug_column, :format => { :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed." }
       before_validation :set_slug, :on => :create
     end
   end
