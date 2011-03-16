@@ -8,7 +8,7 @@ module Slug
     #
     # Options:
     # * <tt>:column</tt> - the column the slug will be saved to (defaults to <tt>:slug</tt>)
-    # * <tt>:validates_uniquness_if</tt> - proc to determine whether uniqueness validation runs, same format as validates_uniquness_of :if
+    # * <tt>:validate_uniquness_if</tt> - proc to determine whether uniqueness validation runs, same format as validates_uniquness_of :if
     #
     # Slug will take care of validating presence and uniqueness of slug.
     
