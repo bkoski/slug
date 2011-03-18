@@ -240,7 +240,11 @@ class TestSlug < Test::Unit::TestCase
       12.times { |i| Article.create!(:headline => 'Test Headline') }
       article_13 = Article.create!(:headline => 'Test Headline')
       assert_equal 'test-headline-12', article_13.slug
-    end
+      
+      12.times { |i| Article.create!(:headline => 'latest from lybia') }
+      article_13 = Article.create!(:headline => 'latest from lybia')
+      assert_equal 'latest-from-lybia-12', article_13.slug
+    end    
   end
 
 end
