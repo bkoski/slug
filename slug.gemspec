@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
     "test/models.rb",
      "test/schema.rb",
      "test/test_helper.rb",
-     "test/test_slug.rb"
+     "test/slug_test.rb"
   ]
 
   if s.respond_to? :specification_version then
