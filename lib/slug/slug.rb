@@ -8,7 +8,8 @@ module Slug
     #
     # Options:
     # * <tt>:column</tt> - the column the slug will be saved to (defaults to <tt>:slug</tt>)
-    # * <tt>:validate_uniquness_if</tt> - proc to determine whether uniqueness validation runs, same format as validates_uniquness_of :if
+    # * <tt>:validate_uniqueness_if</tt> - proc to determine whether uniqueness validation runs, same format as validates_uniquness_of :if
+    # * <tt>:validate_uniqueness_scope</tt> - the column to scope the uniqueness check to
     #
     # Slug will take care of validating presence and uniqueness of slug.
     
@@ -16,7 +17,7 @@ module Slug
     # Note that subsequent changes to the source column will have no effect on the slug.
     # If you'd like to update the slug later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
-      class_inheritable_accessor :slug_source, :slug_column
+      class_inheritable_accessor :slug_source, :slug_column, :slug_scope
       include InstanceMethods
       
       self.slug_source = source
@@ -24,8 +25,13 @@ module Slug
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
 
       uniqueness_opts = {}
-      uniqueness_opts[:if] = opts[:validate_uniqueness_if] if opts.key?(:validate_uniqueness_if)
+      uniqueness_opts[:if]    = opts[:validate_uniqueness_if]     if opts.key?(:validate_uniqueness_if)
       
+      if opts.key?( :validate_uniqueness_scope )
+        uniqueness_opts[:scope] = self.slug_scope = opts[:validate_uniqueness_scope]
+      end
+      
+            
       validates                 self.slug_column, :presence => { :message => "cannot be blank. Is #{self.slug_source} sluggable?" }
       validates                 self.slug_column, :uniqueness => uniqueness_opts
       validates                 self.slug_column, :format => { :with => /^[a-z0-9-]+$/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed." }
@@ -113,13 +119,22 @@ module Slug
   
     # Returns the next unique index for a slug.
     def next_slug_sequence
-      last_in_sequence = self.class.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '%').order("CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}-','') AS UNSIGNED) DESC").first
+      last_in_sequence = find_last_in_sequence
       if last_in_sequence.nil?
         return 0
       else
         sequence_match = last_in_sequence[self.slug_column].match(/^#{self[self.slug_column]}(-(\d+))?/)
         current = sequence_match.nil? ? 0 : sequence_match[2].to_i
         return current + 1
+      end
+    end
+    
+    def find_last_in_sequence  
+      if self.slug_scope.present?
+        
+        self.class.where("#{self.slug_column} LIKE ? and #{self.slug_scope} = ?", self[self.slug_column] + '%', self[self.slug_scope]).order("CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}-','') AS UNSIGNED) DESC").first
+      else        
+        self.class.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '%').order("CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}-','') AS UNSIGNED) DESC").first
       end
     end
   end

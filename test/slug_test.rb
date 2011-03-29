@@ -1,8 +1,9 @@
-require File.dirname(__FILE__) + '/test_helper'
+# encoding: UTF-8
+require 'test_helper'
 
-class TestSlug < Test::Unit::TestCase
+class SlugTest < Test::Unit::TestCase
 
-  def setup
+  def setup 
     Article.delete_all
     Person.delete_all
   end
@@ -44,7 +45,6 @@ class TestSlug < Test::Unit::TestCase
   should "set validation error if source column is empty" do
     article = Article.create
     assert !article.valid?
-    require 'ruby-debug'
     assert article.errors[:slug]
   end
   
@@ -245,6 +245,43 @@ class TestSlug < Test::Unit::TestCase
       article_13 = Article.create!(:headline => 'latest from lybia')
       assert_equal 'latest-from-lybia-12', article_13.slug
     end    
+  end 
+  
+  context "uniqueness with scope" do
+    
+    setup do
+      @portfolio_1 = Portfolio.create!
+      @portfolio_2 = Portfolio.create!
+    end
+    
+    context "with same project name in @portfolio_1 and @portfolio_2" do
+      
+      setup do
+        @project_1 = @portfolio_1.projects.create!(:title => "My Project")
+        @project_2 = @portfolio_2.projects.create!(:title => "My Project")
+      end
+      
+      should "set @project_1 slug to my-project" do
+        assert_equal "my-project", @project_1.slug
+      end
+      
+      should "set @project_2 slug to my-project" do
+        assert_equal "my-project", @project_2.slug
+      end     
+      
+      context "with the same project name in the same portfolio" do
+        setup do
+          @project_3 = @portfolio_1.projects.create!(:title => "My Project")
+        end
+        
+        should "set @project_3 slug to my-project-2" do
+          assert_equal "my-project-1", @project_3.slug
+        end
+      end
+      
+    end
+    
+    
   end
 
 end

@@ -25,6 +25,15 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column "title", "string"
     t.column "location", "string"
     t.column "slug", "string"
+  end 
+  
+  create_table "portfolios", :force => true do |t|    
+  end
+  
+  create_table "projects", :force => true do |t|
+    t.column "title", "string"
+    t.column "slug", "string"
+    t.column "portfolio_id", "integer"
   end
   
 end

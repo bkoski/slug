@@ -24,4 +24,15 @@ class Event < ActiveRecord::Base
   def title_for_slug
     "#{title}-#{location}"
   end
+end  
+
+class Portfolio < ActiveRecord::Base
+  has_many :projects
+end
+
+class Project < ActiveRecord::Base
+  
+  belongs_to :portfolio
+  slug :title, :validate_uniqueness_scope => :portfolio_id
+  
 end
