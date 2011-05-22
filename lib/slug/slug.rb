@@ -16,7 +16,7 @@ module Slug
     # Note that subsequent changes to the source column will have no effect on the slug.
     # If you'd like to update the slug later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
-      class_inheritable_accessor :slug_source, :slug_column
+      class_attribute :slug_source, :slug_column
       include InstanceMethods
       
       self.slug_source = source
