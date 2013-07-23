@@ -33,15 +33,4 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = false
 end
 
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |t|
-    t.libs << 'test'
-    t.test_files = FileList['test/**/*_test.rb']
-    t.verbose = true
-  end
-rescue LoadError
-  puts "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-end
-
 task :default => :test
