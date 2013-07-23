@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
     "test/models.rb",
     "test/schema.rb",
     "test/test_helper.rb",
-    "test/test_slug.rb"
+    "test/slug_test.rb"
   ]
   s.homepage = %q{http://github.com/bkoski/slug}
   s.require_paths = ["lib"]
