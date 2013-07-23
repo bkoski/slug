@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require File.dirname(__FILE__) + '/test_helper'
 
 class TestSlug < Test::Unit::TestCase
@@ -44,7 +46,6 @@ class TestSlug < Test::Unit::TestCase
   should "set validation error if source column is empty" do
     article = Article.create
     assert !article.valid?
-    require 'ruby-debug'
     assert article.errors[:slug]
   end
   
@@ -244,7 +245,13 @@ class TestSlug < Test::Unit::TestCase
       12.times { |i| Article.create!(:headline => 'latest from lybia') }
       article_13 = Article.create!(:headline => 'latest from lybia')
       assert_equal 'latest-from-lybia-12', article_13.slug
-    end    
+    end
+
+    should 'assign a -2 suffux to the third instance of the slug containing numbers' do 
+      2.times { |i| Article.create! :headline => '11111' }
+      article_3 = Article.create! :headline => '11111'
+      assert_equal '11111-2', article_3.slug
+    end
   end
 
 end
