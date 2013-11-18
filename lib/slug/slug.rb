@@ -118,7 +118,7 @@ module Slug
       if first_in_sequence.nil?
         return 0
       else
-        last_in_sequence = self.class.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '-%').order("CAST(REPLACE(#{self.slug_column}, '#{self[self.slug_column]}-', '') AS UNSIGNED) DESC").limit(1).first
+        last_in_sequence = self.class.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '-%').order("CAST(REPLACE(#{self.slug_column}, '#{self[self.slug_column]}-', '') AS INTEGER) DESC").limit(1).first
         
         if last_in_sequence.nil?
           return 1
