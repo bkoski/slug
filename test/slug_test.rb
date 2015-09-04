@@ -235,6 +235,12 @@ class SlugTest < ActiveSupport::TestCase
       article_2 = Article.create!(:headline => 'Test Headline')
       assert_equal 'test-headline-1', article_2.slug
     end
+
+    it "knows about single table inheritance" do
+      article = Article.create!(:headline => 'Test Headline')
+      story = Storyline.create!(:headline => article.headline)
+      assert_equal 'test-headline-1', story.slug
+    end
     
     it "assigns a -12 suffix to the thirteenth instance of the slug" do
       12.times { |i| Article.create!(:headline => 'Test Headline') }

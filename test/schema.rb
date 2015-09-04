@@ -4,6 +4,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column "headline", "string"
     t.column "section", "string"
     t.column "slug", "string"
+    t.column "type", "string"
   end
   
   create_table "people", :force => true do |t|

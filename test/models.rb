@@ -3,6 +3,9 @@ class Article < ActiveRecord::Base
   slug :headline  
 end
 
+class Storyline < Article
+end
+
 # Used to test alternate slug column
 class Person < ActiveRecord::Base
   slug :name, :column => :web_slug
