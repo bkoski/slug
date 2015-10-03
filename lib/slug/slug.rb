@@ -113,14 +113,23 @@ module Slug
   
     # Returns the next unique index for a slug.
     def next_slug_sequence
-      last_in_sequence = self.class.base_class.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '%').order("CAST(REPLACE(#{self.slug_column},'#{self[self.slug_column]}-','') AS UNSIGNED) DESC").first
-      if last_in_sequence.nil?
+      assoc = self.class.base_class
+      first_in_sequence = assoc.where(self.slug_column => self[self.slug_column]).first
+
+      if first_in_sequence.nil?
         return 0
       else
-        sequence_match = last_in_sequence[self.slug_column].match(/^#{self[self.slug_column]}(-(\d+))?/)
-        current = sequence_match.nil? ? 0 : sequence_match[2].to_i
-        return current + 1
+        last_in_sequence = assoc.where("#{self.slug_column} LIKE ?", self[self.slug_column] + '-%').order("CAST(REPLACE(#{self.slug_column}, '#{self[self.slug_column]}-', '') AS INTEGER) DESC").limit(1).first
+        
+        if last_in_sequence.nil?
+          return 1
+        else
+          sequence_match = last_in_sequence[self.slug_column].match(/^#{self[self.slug_column]}(-(\d+))?/)
+          current = sequence_match.nil? ? 0 : sequence_match[2].to_i
+          return current + 1
+        end
       end
     end
+
   end
 end

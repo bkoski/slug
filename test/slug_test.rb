@@ -236,6 +236,12 @@ class SlugTest < ActiveSupport::TestCase
       assert_equal 'test-headline-1', article_2.slug
     end
 
+    it 'assigns a -2 suffux to the third instance of the slug containing numbers' do 
+      2.times { |i| Article.create! :headline => '11111' }
+      article_3 = Article.create! :headline => '11111'
+      assert_equal '11111-2', article_3.slug
+    end
+
     it "knows about single table inheritance" do
       article = Article.create!(:headline => 'Test Headline')
       story = Storyline.create!(:headline => article.headline)
