@@ -247,6 +247,14 @@ class SlugTest < ActiveSupport::TestCase
       story = Storyline.create!(:headline => article.headline)
       assert_equal 'test-headline-1', story.slug
     end
+
+    it "correctly slugs for partial matches" do
+      rap_metal = Article.create!(:headline => 'Rap Metal')
+      assert_equal 'rap-metal', rap_metal.slug
+
+      rap = Article.create!(:headline => 'Rap')
+      assert_equal('rap', rap.slug)
+    end
     
     it "assigns a -12 suffix to the thirteenth instance of the slug" do
       12.times { |i| Article.create!(:headline => 'Test Headline') }
