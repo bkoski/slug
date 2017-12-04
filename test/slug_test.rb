@@ -267,7 +267,7 @@ class SlugTest < ActiveSupport::TestCase
       assert_equal 'latest-from-lybia-12', article_13.slug
     end
 
-    should 'assign a -2 suffux to the third instance of the slug containing numbers' do 
+    it 'assigns a -2 suffux to the third instance of the slug containing numbers' do 
       2.times { |i| Article.create! :headline => '11111' }
       article_3 = Article.create! :headline => '11111'
       assert_equal '11111-2', article_3.slug
