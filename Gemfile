@@ -13,7 +13,6 @@ group :development, :test do
   gem 'rails', '4.0.13'
 
   gem 'rake'
-  gem 'jeweler'
   gem 'mocha'
   gem 'sqlite3'
 end
