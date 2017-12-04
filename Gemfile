@@ -7,11 +7,8 @@ group :development, :test do
   gem 'minitest'
   gem 'minitest-reporters'
   gem 'minitest-focus'
-  
-  # update this when moving to rails 4.1
-  gem 'minitest-spec-rails', '~> 4.7'
-  gem 'rails', '4.0.13'
-
+  gem 'minitest-spec-rails'
+  gem 'rails'
   gem 'rake'
   gem 'mocha'
   gem 'sqlite3'
