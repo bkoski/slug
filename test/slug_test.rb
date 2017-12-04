@@ -1,4 +1,5 @@
-# -*- encoding : utf-8 -*-
+# encoding: utf-8
+
 require File.dirname(__FILE__) + '/test_helper'
 
 class SlugTest < ActiveSupport::TestCase
@@ -264,7 +265,13 @@ class SlugTest < ActiveSupport::TestCase
       12.times { |i| Article.create!(:headline => 'latest from lybia') }
       article_13 = Article.create!(:headline => 'latest from lybia')
       assert_equal 'latest-from-lybia-12', article_13.slug
-    end    
+    end
+
+    should 'assign a -2 suffux to the third instance of the slug containing numbers' do 
+      2.times { |i| Article.create! :headline => '11111' }
+      article_3 = Article.create! :headline => '11111'
+      assert_equal '11111-2', article_3.slug
+    end
   end
 
 end

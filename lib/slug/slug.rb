@@ -122,18 +122,16 @@ module Slug
       else
         last_in_sequence = assoc.
           where("#{self.slug_column} LIKE ?", "#{slug_val}-%").
-          order("CAST(REPLACE(#{self.slug_column}, '#{slug_val}-', '') AS DECIMAL) DESC").
+          order("CAST(REPLACE(#{self.slug_column}, "#{slug_val}-", '') AS INTEGER) DESC").
           limit(1).first
-        
         if last_in_sequence.nil?
           return 1
         else
-          sequence_match = last_in_sequence[self.slug_column].match(/^#{self[self.slug_column]}(-(\d+))?/)
+          sequence_match = last_in_sequence[self.slug_column].match(/^#{slug_val}(-(\d+))?/)
           current = sequence_match.nil? ? 0 : sequence_match[2].to_i
           return current + 1
         end
       end
     end
-
   end
 end

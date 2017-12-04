@@ -29,7 +29,8 @@ Gem::Specification.new do |s|
     "slug.gemspec",
     "test/models.rb",
     "test/schema.rb",
-    "test/test_helper.rb"
+    "test/test_helper.rb",
+    "test/slug_test.rb"
   ]
   s.homepage = "http://github.com/bkoski/slug"
   s.rubygems_version = "2.2.0"
