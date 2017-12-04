@@ -122,7 +122,7 @@ module Slug
       else
         last_in_sequence = assoc.
           where("#{self.slug_column} LIKE ?", "#{slug_val}-%").
-          order("CAST(REPLACE(#{self.slug_column}, "#{slug_val}-", '') AS INTEGER) DESC").
+          order("CAST(REPLACE(#{self.slug_column}, '#{slug_val}-', '') AS INTEGER) DESC").
           limit(1).first
         if last_in_sequence.nil?
           return 1
