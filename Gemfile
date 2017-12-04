@@ -14,7 +14,6 @@ group :development, :test do
 
   gem 'rake'
   gem 'jeweler'
-  gem 'spicycode-rcov'
   gem 'mocha'
   gem 'sqlite3'
 end
