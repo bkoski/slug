@@ -12,15 +12,13 @@ What's different:
 
 == INSTALLATION
 
-  sudo gem install slug
+Add the gem to your Gemfile
 
-then add
+  gem 'slug'
 
-  config.gem 'slug'
+of your rails project.
 
-to your rails project.
-
-Note that this version of slug is only compatible with Rails/active_support/active_record 3.x+.  Rails 2 applications should use slug 0.5.3.
+This is tested with Rails 5.1.4, MRI Ruby 2.4.1
 
 == USAGE
 
