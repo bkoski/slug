@@ -76,7 +76,7 @@ class SlugTest < ActiveSupport::TestCase
     
     it "validates uniqueness of slug by default" do
       Article.delete_all
-      article1 = Article.create!(:headline => 'Test Headline')
+      Article.create!(:headline => 'Test Headline')
       article2 = Article.create!(:headline => 'Test Headline')
       article2.slug = 'test-headline'
       
@@ -85,7 +85,7 @@ class SlugTest < ActiveSupport::TestCase
     end
 
     it "uses validate_uniqueness_if proc to decide whether uniqueness validation applies" do
-      article1 = Post.create!(:headline => 'Test Headline')
+      Post.create!(:headline => 'Test Headline')
       article2 = Post.new
       article2.slug = 'test-headline'
       
@@ -262,7 +262,7 @@ class SlugTest < ActiveSupport::TestCase
     
     it "assigns a -1 suffix to the second instance of the slug" do
       Article.delete_all
-      article_1 = Article.create!(:headline => 'Test Headline')
+      Article.create!(:headline => 'Test Headline')
       article_2 = Article.create!(:headline => 'Test Headline')
       assert_equal 'test-headline-1', article_2.slug
     end
