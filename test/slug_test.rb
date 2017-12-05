@@ -22,7 +22,7 @@ class SlugTest < ActiveSupport::TestCase
         article = Article.create!(:headline => 'Test Headline')
         assert_equal 'test-headline', article.slug
       end
-      
+
       it "saves slug to :column specified in options" do
         Person.delete_all
         person = Person.create!(:name => 'Test Person')
@@ -33,7 +33,7 @@ class SlugTest < ActiveSupport::TestCase
 
   describe "column validations" do
     it "raises ArgumentError if an invalid source column is passed" do
-      Company.slug(:invalid_source_column) 
+      Company.slug(:invalid_source_column)
       assert_raises(ArgumentError) { Company.create! }
     end
 
@@ -42,7 +42,7 @@ class SlugTest < ActiveSupport::TestCase
       assert_raises(ArgumentError) { Company.create! }
     end
   end
-  
+
   describe 'validation' do
     it "sets validation error if source column is empty" do
       Article.delete_all
@@ -50,14 +50,14 @@ class SlugTest < ActiveSupport::TestCase
       assert !article.valid?
       assert article.errors[:slug]
     end
-    
+
     it "sets validation error if normalization makes source value empty" do
       Article.delete_all
       article = Article.create(:headline => '$$$')
       assert !article.valid?
       assert article.errors[:slug]
     end
-    
+
     it "doesn't update the slug even if the source column changes" do
       Article.delete_all
       article = Article.create!(:headline => 'Test Headline')
@@ -73,13 +73,13 @@ class SlugTest < ActiveSupport::TestCase
       assert !article.valid?
       assert article.errors[:slug].present?
     end
-    
+
     it "validates uniqueness of slug by default" do
       Article.delete_all
       Article.create!(:headline => 'Test Headline')
       article2 = Article.create!(:headline => 'Test Headline')
       article2.slug = 'test-headline'
-      
+
       assert !article2.valid?
       assert article2.errors[:slug].present?
     end
@@ -88,7 +88,7 @@ class SlugTest < ActiveSupport::TestCase
       Post.create!(:headline => 'Test Headline')
       article2 = Post.new
       article2.slug = 'test-headline'
-      
+
       assert article2.valid?
     end
 
@@ -105,18 +105,18 @@ class SlugTest < ActiveSupport::TestCase
       @article = Article.create(:headline => 'test headline')
       @original_slug = @article.slug
     end
-    
+
     it "maintains the same slug if slug column hasn't changed" do
       @article.reset_slug
-      assert_equal @original_slug, @article.slug      
+      assert_equal @original_slug, @article.slug
     end
-    
+
     it "changes slug if slug column has updated" do
       @article.headline = "donkey"
       @article.reset_slug
       refute_equal(@original_slug, @article.slug)
     end
-    
+
     it "maintains sequence" do
       @existing_article = Article.create!(:headline => 'world cup')
       @article.headline = "world cup"
@@ -124,7 +124,7 @@ class SlugTest < ActiveSupport::TestCase
       assert_equal 'world-cup-1', @article.slug
     end
   end
-  
+
   describe "slug normalization" do
     it "lowercases strings" do
       Article.delete_all
@@ -133,7 +133,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_equal "abc", @article.slug
     end
-  
+
     it "replaces whitespace with dashes" do
       Article.delete_all
       @article = Article.new
@@ -157,7 +157,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_match 'abc', @article.slug
     end
-  
+
     it "strips trailing space" do
       Article.delete_all
       @article = Article.new
@@ -173,7 +173,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_equal 'ab', @article.slug
     end
-      
+
     it "strips trailing dashes" do
       Article.delete_all
       @article = Article.new
@@ -205,7 +205,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_match 'a-b-c-d', @article.slug
     end
-    
+
     it "doesn't insert dashes for periods in acronyms, regardless of where they appear in string" do
       Article.delete_all
       @article = Article.new
@@ -213,7 +213,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_match 'nypd-vs-nsa-vs-fbi', @article.slug
     end
-    
+
     it "doesn't insert dashes for apostrophes" do
       Article.delete_all
       @article = Article.new
@@ -221,7 +221,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_match 'thomas-jeffersons-papers', @article.slug
     end
-    
+
     it "preserves numbers in slug" do
       Article.delete_all
       @article = Article.new
@@ -230,7 +230,7 @@ class SlugTest < ActiveSupport::TestCase
       assert_match '2010-election', @article.slug
     end
   end
-  
+
   describe "diacritics handling" do
     it "strips diacritics" do
       Article.delete_all
@@ -239,7 +239,7 @@ class SlugTest < ActiveSupport::TestCase
       @article.save!
       assert_equal "acai", @article.slug
     end
-  
+
     it "strips diacritics correctly " do
       Article.delete_all
       @article = Article.new
@@ -259,7 +259,7 @@ class SlugTest < ActiveSupport::TestCase
       article = Article.create!(:headline => 'Test Headline')
       assert_equal 'test-headline', article.slug
     end
-    
+
     it "assigns a -1 suffix to the second instance of the slug" do
       Article.delete_all
       Article.create!(:headline => 'Test Headline')
@@ -267,7 +267,7 @@ class SlugTest < ActiveSupport::TestCase
       assert_equal 'test-headline-1', article_2.slug
     end
 
-    it 'assigns a -2 suffux to the third instance of the slug containing numbers' do 
+    it 'assigns a -2 suffux to the third instance of the slug containing numbers' do
       Article.delete_all
       2.times { |i| Article.create! :headline => '11111' }
       article_3 = Article.create! :headline => '11111'
@@ -289,24 +289,23 @@ class SlugTest < ActiveSupport::TestCase
       rap = Article.create!(:headline => 'Rap')
       assert_equal('rap', rap.slug)
     end
-    
+
     it "assigns a -12 suffix to the thirteenth instance of the slug" do
       Article.delete_all
       12.times { |i| Article.create!(:headline => 'Test Headline') }
       article_13 = Article.create!(:headline => 'Test Headline')
       assert_equal 'test-headline-12', article_13.slug
-      
+
       12.times { |i| Article.create!(:headline => 'latest from lybia') }
       article_13 = Article.create!(:headline => 'latest from lybia')
       assert_equal 'latest-from-lybia-12', article_13.slug
     end
 
-    it 'assigns a -2 suffux to the third instance of the slug containing numbers' do 
+    it 'assigns a -2 suffux to the third instance of the slug containing numbers' do
       Article.delete_all
       2.times { |i| Article.create! :headline => '11111' }
       article_3 = Article.create! :headline => '11111'
       assert_equal '11111-2', article_3.slug
     end
   end
-
 end
