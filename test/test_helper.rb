@@ -18,9 +18,7 @@ require 'active_support'
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'slug'
 
-ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
-silence_stream(STDOUT) do
-  load(File.dirname(__FILE__) + "/schema.rb")
-end
+ActiveRecord::Base.establish_connection :adapter => "postgresql", :database => "slug_test"
+load(File.dirname(__FILE__) + "/schema.rb")
 
 require 'models'
