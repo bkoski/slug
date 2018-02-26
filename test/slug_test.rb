@@ -44,7 +44,6 @@ class TestSlug < Test::Unit::TestCase
   should "set validation error if source column is empty" do
     article = Article.create
     assert !article.valid?
-    require 'ruby-debug'
     assert article.errors[:slug]
   end
   
