@@ -50,5 +50,10 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activerecord>, ["> 3.0.0"])
     s.add_dependency(%q<activesupport>, ["> 3.0.0"])
   end
+
+  s.add_development_dependency "mocha"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "shoulda"
+  s.add_development_dependency "test-unit"
 end
 
