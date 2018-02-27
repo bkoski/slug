@@ -41,16 +41,19 @@ class TestSlug < Test::Unit::TestCase
     end
   end
   
-  should "set validation error if source column is empty" do
-    article = Article.create
-    assert !article.valid?
-    assert article.errors[:slug]
+  should "generate a generic slug if source column is empty" do
+    article = Article.create!
+    assert_equal 'article', article.slug
   end
   
-  should "set validation error if normalization makes source value empty" do
-    article = Article.create(:headline => '$$$')
-    assert !article.valid?
-    assert article.errors[:slug]
+  should "generate a generic slug if normalization makes source value empty" do
+    article = Article.create!(:headline => '$$$')
+    assert_equal 'article', article.slug
+  end
+
+  should "generate a generic slug if source value contains no Latin characters" do
+    article = Article.create!(:headline => 'ローマ字がない')
+    assert_equal 'article', article.slug
   end
   
   should "not update the slug even if the source column changes" do

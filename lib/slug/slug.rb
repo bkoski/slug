@@ -46,6 +46,7 @@ module Slug
 
       strip_diacritics_from_slug
       normalize_slug
+      genericize_slug
       assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
     end
   
@@ -83,6 +84,12 @@ module Slug
       s.gsub!(/-\z/, '')      # Remove trailing dashes
       s.gsub!(/-+/, '-')      # get rid of double-dashes
       self[self.slug_column] = s.to_s
+    end
+
+    def genericize_slug
+      return unless self[self.slug_column].blank?
+      self[self.slug_column] =
+        self.class.to_s.demodulize.underscore.dasherize
     end
   
     # Converts accented characters to their ASCII equivalents and removes them if they have no equivalent.
