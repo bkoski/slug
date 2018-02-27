@@ -122,7 +122,7 @@ module Slug
     def next_slug_sequence
       last_in_sequence =
         self.class.
-        where("#{self.slug_column} LIKE ?", self[self.slug_column] + '%').
+        where("#{self.slug_column} ~ '^" + self[self.slug_column] + "(-\\d+|)?$'").
         order("
             CAST(
               REGEXP_REPLACE(

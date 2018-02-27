@@ -238,6 +238,17 @@ class TestSlug < Test::Unit::TestCase
       assert_equal 'test-headline-1', article_2.slug
     end
     
+    should "ignore partial matches when calculating sequence" do
+      article_1 = Article.create!(:headline => 'Test Headline')
+      assert_equal 'test-headline', article_1.slug
+      article_2 = Article.create!(:headline => 'Test')
+      assert_equal 'test', article_2.slug
+      article_3 = Article.create!(:headline => 'Test')
+      assert_equal 'test-1', article_3.slug
+      article_4 = Article.create!(:headline => 'Test')
+      assert_equal 'test-2', article_4.slug
+    end
+
     should "assign a -12 suffix to the thirteenth instance of the slug" do
       12.times { |i| Article.create!(:headline => 'Test Headline') }
       article_13 = Article.create!(:headline => 'Test Headline')
