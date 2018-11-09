@@ -1,6 +1,6 @@
 module Slug
   module ClassMethods
-    
+
     # Call this to set up slug handling on an ActiveRecord model.
     #
     # Params:
@@ -11,34 +11,34 @@ module Slug
     # * <tt>:validate_uniquness_if</tt> - proc to determine whether uniqueness validation runs, same format as validates_uniquness_of :if
     #
     # Slug will take care of validating presence and uniqueness of slug.
-    
+
     # Before create, Slug will generate and assign the slug if it wasn't explicitly set.
     # Note that subsequent changes to the source column will have no effect on the slug.
     # If you'd like to update the slug later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
       class_attribute :slug_source, :slug_column
       include InstanceMethods
-      
+
       self.slug_source = source
-      
+
       self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
 
       uniqueness_opts = {}
-      uniqueness_opts[:if] = opts[:validate_uniqueness_if] if opts.key?(:validate_uniqueness_if)
-      
-      validates                 self.slug_column, :presence => { :message => "cannot be blank. Is #{self.slug_source} sluggable?" }
-      validates                 self.slug_column, :uniqueness => uniqueness_opts
-      validates                 self.slug_column, :format => { :with => /\A[a-z0-9-]+\z/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed." }
+      uniqueness_opts.merge!(:if => opts[:validate_uniqueness_if]) if opts[:validate_uniqueness_if].present?
+
+      validates                 self.slug_column, :presence => :true, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
+      validates                 self.slug_column, :uniqueness => :true, uniqueness_opts
+      validates                 self.slug_column, :format => :with => /\A[a-z0-9-]+\z/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
       before_validation :set_slug, :on => :create
     end
   end
-  
+
   module InstanceMethods
-  
+
     # Sets the slug. Called before create.
     # By default, set_slug won't change slug if one already exists.  Pass :force => true to overwrite.
     def set_slug(opts={})
-      validate_slug_columns      
+      validate_slug_columns
       return unless self[self.slug_column].blank? || opts[:force] == true
 
       original_slug = self[self.slug_column]
@@ -48,21 +48,21 @@ module Slug
       normalize_slug
       assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
     end
-  
+
     # Overwrite existing slug based on current contents of source column.
     def reset_slug
       set_slug(:force => true)
     end
-  
+
     # Overrides to_param to return the model's slug.
     def to_param
       self[self.slug_column]
     end
-  
+
     def self.included(klass)
       klass.extend(ClassMethods)
     end
-  
+
     private
     # Validates that source and destination methods exist. Invoked at runtime to allow definition
     # of source/slug methods after <tt>slug</tt> setup in class.
@@ -70,7 +70,7 @@ module Slug
       raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
       raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
     end
-    
+
     # Takes the slug, downcases it and replaces non-word characters with a -.
     # Feel free to override this method if you'd like different slug formatting.
     def normalize_slug
@@ -84,7 +84,7 @@ module Slug
       s.gsub!(/-+/, '-')      # get rid of double-dashes
       self[self.slug_column] = s.to_s
     end
-  
+
     # Converts accented characters to their ASCII equivalents and removes them if they have no equivalent.
     # Override this with a void function if you don't want accented characters to be stripped.
     def strip_diacritics_from_slug
@@ -102,15 +102,23 @@ module Slug
       s = s.pack('U*')
       self[self.slug_column] = s.to_s
     end
-  
+
     # If a slug of the same name already exists, this will append '-n' to the end of the slug to
     # make it unique. The second instance gets a '-1' suffix.
     def assign_slug_sequence
       return if self[self.slug_column].blank?
       self[self.slug_column] = next_slug_sequence
     end
+<<<<<<< HEAD
   
     # Returns the next unique slug.
+||||||| merged common ancestors
+  
+    # Returns the next unique index for a slug.
+=======
+
+    # Returns the next unique index for a slug.
+>>>>>>> 8de46a46f476b540a2340e057d69a731af2d0da7
     def next_slug_sequence
       assoc = self.class.base_class
       base_val = slug_val = self[self.slug_column]
