@@ -1,9 +1,7 @@
 require 'rubygems'
-require 'minitest/autorun'
 require 'minitest/reporters'
 require 'minitest/focus'
 require 'minitest-spec-rails'
-require 'mocha'
 
 # You can use "rake test AR_VERSION=2.0.5" to test against 2.0.5, for example.
 # The default is to use the latest installed ActiveRecord.
