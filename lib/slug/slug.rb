@@ -16,19 +16,22 @@ module Slug
     # Note that subsequent changes to the source column will have no effect on the slug.
     # If you'd like to update the slug later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
-      class_attribute :slug_source, :slug_column
+      class_attribute :slug_source, :slug_column, :generic_default
       include InstanceMethods
 
       self.slug_source = source
-
-      self.slug_column = opts.has_key?(:column) ? opts[:column] : :slug
+      self.slug_column = opts.fetch(:column, :slug)
+      self.generic_default = opts.fetch(:generic_default, false)
 
       uniqueness_opts = {}
       uniqueness_opts.merge!(:if => opts[:validate_uniqueness_if]) if opts[:validate_uniqueness_if].present?
+      validates_uniqueness_of self.slug_column, uniqueness_opts
 
-      validates                 self.slug_column, :presence => :true, :message => "cannot be blank. Is #{self.slug_source} sluggable?"
-      validates                 self.slug_column, :uniqueness => :true, uniqueness_opts
-      validates                 self.slug_column, :format => :with => /\A[a-z0-9-]+\z/, :message => "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
+      validates_presence_of self.slug_column,
+        message: "cannot be blank. Is #{self.slug_source} sluggable?"
+      validates_format_of self.slug_column,
+        with: /\A[a-z0-9-]+\z/,
+        message: "contains invalid characters. Only downcase letters, numbers, and '-' are allowed."
       before_validation :set_slug, :on => :create
     end
   end
@@ -46,6 +49,7 @@ module Slug
 
       strip_diacritics_from_slug
       normalize_slug
+      genericize_slug if generic_default
       assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
     end
 
@@ -83,6 +87,12 @@ module Slug
       s.gsub!(/-\z/, '')      # Remove trailing dashes
       s.gsub!(/-+/, '-')      # get rid of double-dashes
       self[self.slug_column] = s.to_s
+    end
+
+    def genericize_slug
+      if self[self.slug_column].blank?
+        self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
+      end
     end
 
     # Converts accented characters to their ASCII equivalents and removes them if they have no equivalent.

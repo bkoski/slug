@@ -1,16 +1,13 @@
 require 'rubygems'
+require 'minitest/autorun'
 require 'minitest/reporters'
-require 'minitest/focus'
-require 'minitest-spec-rails'
 
 # You can use "rake test AR_VERSION=2.0.5" to test against 2.0.5, for example.
 # The default is to use the latest installed ActiveRecord.
 if ENV["AR_VERSION"]
   gem 'activerecord', "#{ENV["AR_VERSION"]}"
-  gem 'activesupport', "#{ENV["AR_VERSION"]}"
 end
 require 'active_record'
-require 'active_support'
 
 # color test output
 Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(:color => true)]

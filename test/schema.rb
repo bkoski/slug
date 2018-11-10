@@ -27,4 +27,9 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column "location", "string"
     t.column "slug", "string"
   end
+
+  create_table "generations", :force => true do |t|
+    t.column "title", "string"
+    t.column "slug", "string", null: false
+  end
 end
