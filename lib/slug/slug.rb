@@ -109,16 +109,8 @@ module Slug
       return if self[self.slug_column].blank?
       self[self.slug_column] = next_slug_sequence
     end
-<<<<<<< HEAD
-  
-    # Returns the next unique slug.
-||||||| merged common ancestors
-  
-    # Returns the next unique index for a slug.
-=======
 
     # Returns the next unique index for a slug.
->>>>>>> 8de46a46f476b540a2340e057d69a731af2d0da7
     def next_slug_sequence
       assoc = self.class.base_class
       base_val = slug_val = self[self.slug_column]
