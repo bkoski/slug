@@ -290,12 +290,21 @@ describe Slug do
       assert_equal 'test-headline-1', story.slug
     end
 
-    it "correctly slugs for partial matches" do
+    it "correctly slugs when a slug is a substring of another" do
       rap_metal = Article.create!(:headline => 'Rap Metal')
       assert_equal 'rap-metal', rap_metal.slug
 
       rap = Article.create!(:headline => 'Rap')
       assert_equal('rap', rap.slug)
+    end
+
+    it "applies sequence logic correctly when the slug is a substring of another" do
+      rap_metal = Article.create!(:headline => 'Rap Metal')
+      assert_equal 'rap-metal', rap_metal.slug
+
+      Article.create!(:headline => 'Rap')
+      second_rap = Article.create!(:headline => 'Rap')
+      assert_equal('rap-1', second_rap.slug)
     end
   end
 end
