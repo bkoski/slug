@@ -89,7 +89,7 @@ Some prefer to get the exception in this case. Others want to get a good
 slug and move on.
 
 == NOTES
-* Slug validates presence and uniqueness of the slug column.  If you pass something that isn't sluggable as the source (for example, say you set the headline to '---'), a validation error will be set.
+* Slug validates presence and uniqueness of the slug column.  If you pass something that isn't sluggable as the source (for example, say you set the headline to '---'), a validation error will be set. (See the <tt>:generic_default</tt> option for avoiding this.
 * Slug doesn't update the slug if the source column changes.  If you really need to regenerate the slug, call <tt>@model.set_slug</tt> before save.
 * If a slug already exists, Slug will automatically append a '-n' suffix to your slug to make it unique.  The second instance of a slug is '-1'.
 * If you don't like the slug formatting or the accented character stripping doesn't work for you, it's easy to override Slug's formatting functions. Check the source for details.
@@ -101,4 +101,4 @@ Ben Koski, ben.koski@gmail.com
 with generous contributions from:
 - Derek Willis, @derekwillis
 - others listed in the commit history, which can be found in the
-[GitHub contributor list](https://github.com/wbreeze/slug/graphs/contributors)
+{GitHub contributor list}[https://github.com/wbreeze/slug/graphs/contributors]
