@@ -10,7 +10,7 @@ What's different:
   * Like friendly_id, diacritics (accented characters) are stripped from slug strings.
   * The number of options is manageable.
 
-### Installation
+## Installation
 
 Add the gem to your Gemfile
 
@@ -22,9 +22,9 @@ of your rails project.
 
 This is tested with Rails 5.1.4, MRI Ruby 2.4.1
 
-### Usage
+## Usage
 
-#### Creating the database column
+### Creating the database column
 
 It's up to you to set up the appropriate column in your model.  By default, slug saves the slug to a column called 'slug', so in most cases you'll just want to add
 
@@ -40,7 +40,7 @@ add_index :model_name, :slug, unique: true
 
 Though Slug uses `validates_uniqueness_of` to ensue the uniqueness of your slug, two concurrent INSERTs could try to set the same slug.
 
-#### Model setup
+### Model setup
 
 Once your table is migrated, just add
 
@@ -50,7 +50,7 @@ slug :source_field
 
 to your ActiveRecord model.  `:source_field` is the column you'd like to base the slug on.  For example, it might be `:headline`.
 
-##### Using an instance method as the source column
+#### Using an instance method as the source column
 
 The source column isn't limited to just database attributes—you can specify any instance method.  This is handy if you need special formatting on your source column before it's slugged, or if you want to base the slug on several attributes.
 
@@ -70,11 +70,12 @@ would use `headline-pub year-pub month` as the slug source.
 
 From here, you can work with your slug as if it were a normal column.  `find_by_slug` and named scopes will work as they do for any other column.
 
-#### Options
+### Options
 
 There are two options:
 
-##### Column
+#### Column
+
 If you want to save the slug in a database column that isn't called
 `slug`, just pass the `:column` option. For example:
 
@@ -84,7 +85,7 @@ slug :headline, column: :web_slug
 
 would generate a slug based on `headline` and save it to `web_slug`.
 
-##### Generic Default
+#### Generic Default
 
 If the source column is empty, blank, or only contains filtered
 characters, you can avoid `ActiveRecord::ValidationError` exceptions
@@ -102,14 +103,14 @@ input or can be blank (nil or empty).
 Some prefer to get the exception in this case. Others want to get a good
 slug and move on.
 
-#### Notes
+## Notes
 
   * Slug validates presence and uniqueness of the slug column.  If you pass something that isn't sluggable as the source (for example, say you set the headline to '---'), a validation error will be set. To avoid this, use the `:generic_default` option.
   * Slug doesn't update the slug if the source column changes.  If you really need to regenerate the slug, call `@model.set_slug` before save.
   * If a slug already exists, Slug will automatically append a '-n' suffix to your slug to make it unique.  The second instance of a slug is '-1'.
   * If you don't like the slug formatting or the accented character stripping doesn't work for you, it's easy to override Slug's formatting functions. Check the source for details.
 
-#### Authors
+## Authors
 
 Ben Koski, ben.koski@gmail.com
 
