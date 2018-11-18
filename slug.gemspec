@@ -3,23 +3,22 @@
 
 Gem::Specification.new do |s|
   s.name = "slug"
-  s.version = "4.0.1"
+  s.version = "4.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Ben Koski"]
-  s.date = "2018-11-11"
+  s.date = "2018-11-17"
   s.description = "Simple, straightforward slugs for your ActiveRecord models."
   s.email = "ben.koski@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     "LICENSE",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
-    "VERSION.yml",
     "lib/slug.rb",
     "lib/slug/slug.rb",
     "slug.gemspec",
