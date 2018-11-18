@@ -46,7 +46,12 @@ module Slug
 
       original_slug = self[self.slug_column]
       self[self.slug_column] = normalize_slug(self.send(self.slug_source))
-      genericize_slug if generic_default
+
+      # if normalize_slug returned a blank string, try the generic_default handling
+      if generic_default && self[self.slug_column].blank?
+        self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
+      end
+
       assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
     end
 
@@ -78,12 +83,6 @@ module Slug
       return if str.blank?
       str.gsub!(/[\p{Pc}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/, '') # Remove punctuation
       str.parameterize
-    end
-
-    def genericize_slug
-     if self[self.slug_column].blank?
-       self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
-     end
     end
 
     # If a slug of the same name already exists, this will append '-n' to the end of the slug to
