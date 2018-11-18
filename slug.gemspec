@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION.yml",
     "lib/slug.rb",
-    "lib/slug/ascii_approximations.rb",
     "lib/slug/slug.rb",
     "slug.gemspec",
     "test/models.rb",

@@ -45,10 +45,7 @@ module Slug
       return unless self[self.slug_column].blank? || opts[:force] == true
 
       original_slug = self[self.slug_column]
-      self[self.slug_column] = self.send(self.slug_source)
-
-      strip_diacritics_from_slug
-      normalize_slug
+      self[self.slug_column] = normalize_slug(self.send(self.slug_source))
       genericize_slug if generic_default
       assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
     end
@@ -77,40 +74,16 @@ module Slug
 
     # Takes the slug, downcases it and replaces non-word characters with a -.
     # Feel free to override this method if you'd like different slug formatting.
-    def normalize_slug
-      return if self[self.slug_column].blank?
-      s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column]).normalize(:kc)
-      s.downcase!
-      s.strip!
-      s.gsub!(/[^a-z0-9\s-]/, '') # Remove non-word characters
-      s.gsub!(/\s+/, '-')     # Convert whitespaces to dashes
-      s.gsub!(/-\z/, '')      # Remove trailing dashes
-      s.gsub!(/-+/, '-')      # get rid of double-dashes
-      self[self.slug_column] = s.to_s
+    def normalize_slug(str)
+      return if str.blank?
+      str.gsub!(/[\p{Pc}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/, '') # Remove punctuation
+      str.parameterize
     end
 
     def genericize_slug
-      if self[self.slug_column].blank?
-        self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
-      end
-    end
-
-    # Converts accented characters to their ASCII equivalents and removes them if they have no equivalent.
-    # Override this with a void function if you don't want accented characters to be stripped.
-    def strip_diacritics_from_slug
-      return if self[self.slug_column].blank?
-      s = ActiveSupport::Multibyte.proxy_class.new(self[self.slug_column])
-      s = s.normalize(:kd).unpack('U*')
-      s = s.inject([]) do |a,u|
-        if Slug::ASCII_APPROXIMATIONS[u]
-          a += Slug::ASCII_APPROXIMATIONS[u].unpack('U*')
-        elsif (u < 0x300 || u > 0x036F)
-          a << u
-        end
-        a
-      end
-      s = s.pack('U*')
-      self[self.slug_column] = s.to_s
+     if self[self.slug_column].blank?
+       self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
+     end
     end
 
     # If a slug of the same name already exists, this will append '-n' to the end of the slug to
