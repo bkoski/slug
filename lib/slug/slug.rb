@@ -42,9 +42,8 @@ module Slug
     # By default, set_slug won't change slug if one already exists.  Pass :force => true to overwrite.
     def set_slug(opts={})
       validate_slug_columns
-      return unless self[self.slug_column].blank? || opts[:force] == true
+      return if self[self.slug_column].present? && !opts[:force]
 
-      original_slug = self[self.slug_column]
       self[self.slug_column] = normalize_slug(self.send(self.slug_source))
 
       # if normalize_slug returned a blank string, try the generic_default handling
@@ -52,7 +51,7 @@ module Slug
         self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
       end
 
-      assign_slug_sequence unless self[self.slug_column] == original_slug # don't try to increment seq if slug hasn't changed
+      assign_slug_sequence if self.changed_attributes.include?(self.slug_column)
     end
 
     # Overwrite existing slug based on current contents of source column.
