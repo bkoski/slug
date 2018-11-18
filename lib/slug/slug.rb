@@ -1,5 +1,9 @@
+require 'active_support/concern'
+
 module Slug
-  module ClassMethods
+  extend ActiveSupport::Concern
+
+  class_methods do
 
     # Call this to set up slug handling on an ActiveRecord model.
     #
@@ -17,7 +21,6 @@ module Slug
     # If you'd like to update the slug later on, call <tt>@model.set_slug</tt>
     def slug source, opts={}
       class_attribute :slug_source, :slug_column, :generic_default
-      include InstanceMethods
 
       self.slug_source = source
       self.slug_column = opts.fetch(:column, :slug)
@@ -36,66 +39,60 @@ module Slug
     end
   end
 
-  module InstanceMethods
+  # Sets the slug. Called before create.
+  # By default, set_slug won't change slug if one already exists.  Pass :force => true to overwrite.
+  def set_slug(opts={})
+    validate_slug_columns
+    return if self[self.slug_column].present? && !opts[:force]
 
-    # Sets the slug. Called before create.
-    # By default, set_slug won't change slug if one already exists.  Pass :force => true to overwrite.
-    def set_slug(opts={})
-      validate_slug_columns
-      return if self[self.slug_column].present? && !opts[:force]
+    self[self.slug_column] = normalize_slug(self.send(self.slug_source))
 
-      self[self.slug_column] = normalize_slug(self.send(self.slug_source))
-
-      # if normalize_slug returned a blank string, try the generic_default handling
-      if generic_default && self[self.slug_column].blank?
-        self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
-      end
-
-      assign_slug_sequence if self.changed_attributes.include?(self.slug_column)
+    # if normalize_slug returned a blank string, try the generic_default handling
+    if generic_default && self[self.slug_column].blank?
+      self[self.slug_column] = self.class.to_s.demodulize.underscore.dasherize
     end
 
-    # Overwrite existing slug based on current contents of source column.
-    def reset_slug
-      set_slug(:force => true)
-    end
+    assign_slug_sequence if self.changed_attributes.include?(self.slug_column)
+  end
 
-    # Overrides to_param to return the model's slug.
-    def to_param
-      self[self.slug_column]
-    end
+  # Overwrite existing slug based on current contents of source column.
+  def reset_slug
+    set_slug(:force => true)
+  end
 
-    def self.included(klass)
-      klass.extend(ClassMethods)
-    end
+  # Overrides to_param to return the model's slug.
+  def to_param
+    self[self.slug_column]
+  end
 
-    private
-    # Validates that source and destination methods exist. Invoked at runtime to allow definition
-    # of source/slug methods after <tt>slug</tt> setup in class.
-    def validate_slug_columns
-      raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
-      raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
-    end
+  private
+  # Validates that source and destination methods exist. Invoked at runtime to allow definition
+  # of source/slug methods after <tt>slug</tt> setup in class.
+  def validate_slug_columns
+    raise ArgumentError, "Source column '#{self.slug_source}' does not exist!" if !self.respond_to?(self.slug_source)
+    raise ArgumentError, "Slug column '#{self.slug_column}' does not exist!"   if !self.respond_to?("#{self.slug_column}=")
+  end
 
-    # Takes the slug, downcases it and replaces non-word characters with a -.
-    # Feel free to override this method if you'd like different slug formatting.
-    def normalize_slug(str)
-      return if str.blank?
-      str.gsub!(/[\p{Pc}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/, '') # Remove punctuation
-      str.parameterize
-    end
+  # Takes the slug, downcases it and replaces non-word characters with a -.
+  # Feel free to override this method if you'd like different slug formatting.
+  def normalize_slug(str)
+    return if str.blank?
+    str.gsub!(/[\p{Pc}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/, '') # Remove punctuation
+    str.parameterize
+  end
 
-    # If a slug of the same name already exists, this will append '-n' to the end of the slug to
-    # make it unique. The second instance gets a '-1' suffix.
-    def assign_slug_sequence
-      return if self[self.slug_column].blank?
-      assoc = self.class.base_class
-      base_slug = self[self.slug_column]
-      seq = 0
+  # If a slug of the same name already exists, this will append '-n' to the end of the slug to
+  # make it unique. The second instance gets a '-1' suffix.
+  def assign_slug_sequence
+    return if self[self.slug_column].blank?
+    assoc = self.class.base_class
+    base_slug = self[self.slug_column]
+    seq = 0
 
-      while assoc.where(self.slug_column => self[self.slug_column]).exists? do
-        seq += 1
-        self[self.slug_column] = "#{base_slug}-#{seq}"
-      end
+    while assoc.where(self.slug_column => self[self.slug_column]).exists? do
+      seq += 1
+      self[self.slug_column] = "#{base_slug}-#{seq}"
     end
   end
+
 end

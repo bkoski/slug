@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), 'slug', 'slug')
 
 if defined?(ActiveRecord)
-  ActiveRecord::Base.instance_eval { extend Slug::ClassMethods }
+  ActiveRecord::Base.instance_eval { include Slug }
 end
 
 if defined?(Rails) && Rails.version.to_i < 3
