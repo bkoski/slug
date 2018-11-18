@@ -117,19 +117,14 @@ module Slug
     # make it unique. The second instance gets a '-1' suffix.
     def assign_slug_sequence
       return if self[self.slug_column].blank?
-      self[self.slug_column] = next_slug_sequence
-    end
-
-    # Returns the next unique index for a slug.
-    def next_slug_sequence
       assoc = self.class.base_class
-      base_val = slug_val = self[self.slug_column]
-      next_id = 1
-      until assoc.where(self.slug_column => slug_val).first.nil? do
-        slug_val = base_val + "-#{next_id}"
-        next_id = next_id + 1
+      base_slug = self[self.slug_column]
+      seq = 0
+
+      while assoc.where(self.slug_column => self[self.slug_column]).exists? do
+        seq += 1
+        self[self.slug_column] = "#{base_slug}-#{seq}"
       end
-      slug_val
     end
   end
 end
