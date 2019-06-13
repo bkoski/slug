@@ -17,10 +17,15 @@ describe Slug do
       assert_equal 'test-event-portland', article.slug
     end
 
+    it "bases to_param on slug" do
+      article = Article.create!(:headline => 'Test Headline')
+      assert_equal(article.slug, article.to_param)
+    end
+
     it "does not impact lookup of model with no slug column" do
       orphan = Orphan.create!(:name => 'Oliver')
       query = orphan.to_param
-      assert_equal(orphan.id, query)
+      assert_equal(orphan.id.to_s, query)
     end
 
     describe "slug column" do
