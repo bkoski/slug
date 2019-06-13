@@ -32,4 +32,10 @@ ActiveRecord::Schema.define(:version => 1) do
     t.column "title", "string"
     t.column "slug", "string", null: false
   end
+
+  # table with no slug column
+  create_table "orphans", :force => true do |t|
+    t.column "name", "string"
+    t.column "location", "string"
+  end
 end

@@ -17,6 +17,12 @@ describe Slug do
       assert_equal 'test-event-portland', article.slug
     end
 
+    it "does not impact lookup of model with no slug column" do
+      orphan = Orphan.create!(:name => 'Oliver')
+      query = orphan.to_param
+      assert_equal(orphan.id, query)
+    end
+
     describe "slug column" do
       it "saves slug to 'slug' column by default" do
         article = Article.create!(:headline => 'Test Headline')
