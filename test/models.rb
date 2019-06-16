@@ -34,3 +34,6 @@ class Generation < ActiveRecord::Base
   slug :title, generic_default: true
 end
 
+# Test model with no slug column
+class Orphan < ActiveRecord::Base
+end
