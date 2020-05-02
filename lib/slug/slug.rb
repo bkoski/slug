@@ -48,7 +48,7 @@ module Slug
       validate_slug_columns
       return if self[self.slug_column].present? && !opts[:force]
 
-      self[self.slug_column] = normalize_slug(self.send(self.slug_source))
+      self[self.slug_column] = normalize_slug(self.send(self.slug_source).dup)
 
       # if normalize_slug returned a blank string, try the generic_default handling
       if generic_default && self[self.slug_column].blank?

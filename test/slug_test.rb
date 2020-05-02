@@ -179,6 +179,13 @@ describe Slug do
       assert_match 'abc', @article.slug
     end
 
+    it "does not spoil the value" do
+      @article.headline = 'abc!@#$%^&*•¶§∞¢££¡¿()><?""\':;][]\.,/'
+      headline = @article.headline.dup
+      @article.save!
+      assert_match headline, @article.headline
+    end
+
     it "strips trailing space" do
       @article.headline = 'ab '
       @article.save!
