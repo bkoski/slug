@@ -80,8 +80,10 @@ module Slug
     # Feel free to override this method if you'd like different slug formatting.
     def normalize_slug(str)
       return if str.blank?
-      str.gsub!(/[\p{Pc}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/, '') # Remove punctuation
-      str.parameterize
+      # Remove punctuation
+      str
+        .gsub(/[\p{Pc}\p{Ps}\p{Pe}\p{Pi}\p{Pf}\p{Po}]/, '')
+        .parameterize
     end
 
     # If a slug of the same name already exists, this will append '-n' to the end of the slug to
