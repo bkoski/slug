@@ -28,6 +28,11 @@ describe Slug do
       assert_equal(orphan.id.to_s, query)
     end
 
+    it "does not modify the source column" do
+      article = Article.create(headline: 'A long, complex, headline')
+      assert_equal('A long, complex, headline', article.headline)
+    end
+
     describe "slug column" do
       it "saves slug to 'slug' column by default" do
         article = Article.create!(:headline => 'Test Headline')
