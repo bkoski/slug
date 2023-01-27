@@ -1,4 +1,4 @@
-# slug
+# Slug
 
 Slug provides simple, straightforward slugging for your ActiveRecord models.
 
@@ -6,19 +6,17 @@ Slug is based on code from Norman Clarke's fantastic [friendly_id](https://githu
 
 What's different:
 
-  * Unlike friendly_id's more advanced modes, slugs are stored directly in your model's table.  friendly_id stores its data in a separate sluggable table, which enables cool things like slug versioning—but forces yet another join when trying to do complex find_by_slugs.
-  * Like friendly_id, diacritics (accented characters) are stripped from slug strings.
-  * The number of options is manageable.
+* Unlike friendly_id's more advanced modes, slugs are stored directly in your model's table.  friendly_id stores its data in a separate sluggable table, which enables cool things like slug versioning—but forces yet another join when trying to do complex find_by_slugs.
+* Like friendly_id, diacritics (accented characters) are stripped from slug strings.
+* The number of options is manageable.
 
 ## Installation
 
-Add the gem to your Gemfile
+Add the gem to your Gemfile of your Rails project.
 
-```
+```bash
 gem 'slug'
 ```
-
-of your rails project.
 
 This is tested with Rails 5.1.4, MRI Ruby 2.4.1
 
@@ -79,7 +77,7 @@ There are two options:
 If you want to save the slug in a database column that isn't called
 `slug`, just pass the `:column` option. For example:
 
-```
+```ruby
 slug :headline, column: :web_slug
 ```
 
@@ -105,19 +103,20 @@ slug and move on.
 
 ## Notes
 
-  * Slug validates presence and uniqueness of the slug column.  If you pass something that isn't sluggable as the source (for example, say you set the headline to '---'), a validation error will be set. To avoid this, use the `:generic_default` option.
-  * Slug doesn't update the slug if the source column changes.  If you really need to regenerate the slug, call `@model.set_slug` before save.
-  * If a slug already exists, Slug will automatically append a '-n' suffix to your slug to make it unique.  The second instance of a slug is '-1'.
-  * If you don't like the slug formatting or the accented character stripping doesn't work for you, it's easy to override Slug's formatting functions. Check the source for details.
+* Slug validates presence and uniqueness of the slug column.  If you pass something that isn't sluggable as the source (for example, say you set the headline to '---'), a validation error will be set. To avoid this, use the `:generic_default` option.
+* Slug doesn't update the slug if the source column changes.  If you really need to regenerate the slug, call `@model.set_slug` before save.
+* If a slug already exists, Slug will automatically append a '-n' suffix to your slug to make it unique.  The second instance of a slug is '-1'.
+* If you don't like the slug formatting or the accented character stripping doesn't work for you, it's easy to override Slug's formatting functions. Check the source for details.
 
 ## Authors
 
 Ben Koski, ben.koski@gmail.com
 
 With generous contributions from:
- * [Derek Willis](http://thescoop.org/)
- * [Douglas Lovell](https://github.com/wbreeze)
- * [Paul Battley](https://github.com/threedaymonk)
- * [Yura Omelchuk](https://github.com/jurgens)
- * others listed in the
+
+* [Derek Willis](http://thescoop.org/)
+* [Douglas Lovell](https://github.com/wbreeze)
+* [Paul Battley](https://github.com/threedaymonk)
+* [Yura Omelchuk](https://github.com/jurgens)
+* others listed in the
 [GitHub contributor list](https://github.com/bkoski/slug/graphs/contributors).
