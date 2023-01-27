@@ -10,6 +10,14 @@ What's different:
 * Like friendly_id, diacritics (accented characters) are stripped from slug strings.
 * The number of options is manageable.
 
+## Testing
+
+Run the tests using:
+
+```bash
+bundle exec ruby -Ilib:test test/slug_test.rb
+```
+
 ## Installation
 
 Add the gem to your Gemfile of your Rails project.
