@@ -121,7 +121,8 @@ describe Slug do
 
   it "doesn't update the slug even if the source column changes" do
     article = Article.create!(:headline => 'Test Headline')
-    article.update_attributes!(:headline =>  'New Headline')
+    article.assign_attributes(:headline =>  'New Headline')
+    article.save!
     assert_equal 'test-headline', article.slug
   end
 
